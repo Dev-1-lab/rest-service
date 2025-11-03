@@ -1,43 +1,33 @@
 package com.example.restservice;
 
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.Arrays;
 
 @SpringBootApplication
 public class RestServiceApplication {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args)   {
         SpringApplication.run(RestServiceApplication.class, args);
-         class UnsafeCounter {
-//            private long counter=0;
-            private final AtomicLong counter=new AtomicLong();
-            public   void incriment(){
-                counter.incrementAndGet();
-            }
-            private AtomicLong get(){
-                return counter;
-            }
-        }
-        UnsafeCounter counter = new UnsafeCounter();
-        Thread[] threads = new Thread[100];
-        for (int i = 0; i < 100; i++) {
-            threads[i] = new Thread(() -> {
-                for (int j = 0; j < 1000; j++) {
-                    counter.incriment();
-                }
-            });
-            threads[i].start();
-        }
-
-        for (Thread t : threads) {
-            t.join();
-        }
-
-        System.out.println("Expected: 100000");
-        System.out.println("Actual:   " + counter.get());
     }
 
+
+
+    @Bean
+    public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
+        return args -> {
+            System.out.println("Let's see the beans provided by Spring Boot:");
+            String [] beans=ctx.getBeanDefinitionNames();
+            Arrays.sort(beans);
+            for (String bean : beans) {
+                System.out.println(bean);
+            }
+            System.out.println(ctx.getBeanDefinitionCount());
+        };
+    }
 
 }
